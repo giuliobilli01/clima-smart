@@ -1,0 +1,42 @@
+dependencies:
+  espressif/mdns:
+    component_hash: b5b30022c46302eab89c1d2e3b6fb5918a627563a7462f0ee284b22b9a934967
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 1.14.0
+  idf:
+    source:
+      type: idf
+    version: 5.5.3
+  jorgecis/irremoteidf:
+    component_hash: 1400cd297176f4b686559dce30e89ee2253ac86822d8720a8ef1c0b8371ff029
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    targets:
+    - esp32
+    - esp32s2
+    - esp32s3
+    - esp32c2
+    - esp32c3
+    - esp32c5
+    - esp32c6
+    - esp32h2
+    - esp32p4
+    version: 1.0.1
+direct_dependencies:
+- espressif/mdns
+- idf
+- jorgecis/irremoteidf
+manifest_hash: 1dae9e94fcb2df31ca1daa5384d4855e34242e1b537e4b1e24ef8e8c0ddf67fe
+target: esp32s3
+version: 2.0.0

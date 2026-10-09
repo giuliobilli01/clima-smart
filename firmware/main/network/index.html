@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>Clima</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #f2f4f7;
+      --card: #ffffff;
+      --text: #1c2430;
+      --muted: #687385;
+      --border: #d5dbe3;
+      --accent: #0a6cdb;
+      --alert: #d93036;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --background: #10141a;
+        --card: #1b212b;
+        --text: #e8edf3;
+        --muted: #95a0b0;
+        --border: #313a47;
+        --accent: #2f8cf0;
+        --alert: #e5484d;
+      }
+    }
+    body {
+      max-width: 26rem;
+      margin: 0 auto;
+      padding: 1rem;
+      font-family: system-ui, sans-serif;
+      background: var(--background);
+      color: var(--text);
+    }
+    h1 {
+      margin: .5rem 0 1rem;
+      font-size: 1.5rem;
+    }
+    .tiles {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+      margin-bottom: 1rem;
+    }
+    .tile, form {
+      background: var(--card);
+      border-radius: 1rem;
+      box-shadow: 0 1px 3px rgb(0 0 0 / .12);
+    }
+    .tile {
+      padding: .75rem 1rem;
+    }
+    .tile strong {
+      display: block;
+      font-size: 1.5rem;
+    }
+    .tile span {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    .tile:first-child {
+      grid-column: span 2;
+    }
+    .tile:first-child strong {
+      font-size: 2.5rem;
+    }
+    .tile.alert {
+      background: var(--alert);
+      color: #fff;
+    }
+    .tile.alert span {
+      color: inherit;
+    }
+    form {
+      display: grid;
+      gap: 1rem;
+      padding: 1rem;
+    }
+    label {
+      display: grid;
+      gap: .35rem;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+    select, input, button {
+      padding: .7rem;
+      border: 1px solid var(--border);
+      border-radius: .6rem;
+      background: var(--background);
+      color: var(--text);
+      font: inherit;
+      font-size: 1rem;
+    }
+    button {
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      font-weight: 600;
+    }
+    button:active {
+      filter: brightness(.9);
+    }
+    #result {
+      min-height: 1.2em;
+      margin: 0;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Clima</h1>
+  <section class="tiles">
+    <div class="tile"><strong id="room_temperature">–</strong><span>Room</span></div>
+    <div class="tile"><strong id="light_level">–</strong><span>Light (0–4095)</span></div>
+    <div class="tile" id="door_tile"><strong id="door">–</strong><span>Door</span></div>
+  </section>
+  <form id="settings">
+    <label>Power <select name="power_on">
+      <option value="1">on</option>
+      <option value="0">off</option>
+    </select></label>
+    <label>Mode <select name="mode">
+      <option value="0">auto</option>
+      <option value="1">cool</option>
+      <option value="2">heat</option>
+      <option value="3">dry</option>
+      <option value="4">fan</option>
+    </select></label>
+    <label>Temperature (°C) <input name="target_temperature_celsius" type="number" min="16" max="30" required></label>
+    <label>Fan <select name="fan">
+      <option value="0">auto</option>
+      <option value="1">min</option>
+      <option value="2">low</option>
+      <option value="3">medium</option>
+      <option value="4">high</option>
+      <option value="5">max</option>
+    </select></label>
+    <button>Send</button>
+    <p id="result" aria-live="polite"></p>
+  </form>
+  <script>
+    const settings = document.getElementById('settings').elements;
+
+    async function readState() {
+      const state = await (await fetch('/state')).json();
+      document.getElementById('room_temperature').textContent =
+        `${state.room_temperature_celsius.toFixed(1)} °C`;
+      document.getElementById('light_level').textContent = state.light_level;
+      document.getElementById('door').textContent = state.door_open ? 'open' : 'closed';
+      document.getElementById('door_tile').classList.toggle('alert', state.door_open);
+      return state;
+    }
+
+    function showSettings(state) {
+      settings.power_on.value = state.power_on ? 1 : 0;
+      settings.mode.value = state.mode;
+      settings.target_temperature_celsius.value = state.target_temperature_celsius;
+      settings.fan.value = state.fan;
+    }
+
+    document.getElementById('settings').onsubmit = async (event) => {
+      event.preventDefault();
+      const response = await fetch('/ac', {method: 'POST', body: new URLSearchParams(new FormData(event.target))});
+      document.getElementById('result').textContent = await response.text();
+    };
+
+    readState().then(showSettings);
+    setInterval(readState, 2000);
+  </script>
+</body>
+</html>

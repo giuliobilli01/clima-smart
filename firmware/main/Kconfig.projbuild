@@ -1,0 +1,39 @@
+menu "Clima Smart"
+
+    config CLIMA_WIFI_SSID
+        string "WiFi network name"
+        help
+            Name (SSID) of the home WiFi network the board connects to.
+            Only 2.4 GHz networks are supported.
+
+    config CLIMA_WIFI_PASSWORD
+        string "WiFi password"
+        help
+            Password of the home WiFi network.
+
+    config CLIMA_WEB_USERNAME
+        string "Web page user name"
+        default "clima"
+        help
+            User name the browser asks for before showing the web page.
+
+    config CLIMA_WEB_PASSWORD
+        string "Web page password"
+        help
+            Password the browser asks for before showing the web page.
+
+    config CLIMA_TELEGRAM_BOT_TOKEN
+        string "Telegram bot token"
+        help
+            Token that @BotFather gives when the bot is created: a number, a
+            colon and a long string of letters and digits. Whoever knows it
+            controls the bot.
+
+    config CLIMA_TELEGRAM_CHAT_IDS
+        string "Telegram chat IDs"
+        help
+            Chats whose commands the bot follows, separated by commas, for
+            example 7123456789,7234567890. Messages from other chats get no
+            answer, and their chat ID is printed on the serial monitor.
+
+endmenu
